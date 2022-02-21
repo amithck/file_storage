@@ -1,17 +1,15 @@
-#include<stdio.h>
-#include<stdlib.h>
-void main()
+void read_files()
 {
-  char *test;
+  char *elements;
   FILE *fp=popen("ls","r");
-  test=(char *)malloc(sizeof(fp));
-  while(fgets(test,sizeof(fp),fp)!= NULL)
+  elements=(char *)malloc(sizeof(fp));
+  while(fgets(elements,sizeof(fp),fp)!= NULL)
   {
-    printf("%s",test);
+    printf("%s",elements);
     int loc=-1;
-    for(int i=0;test[i]!='\n';i++)
+    for(int i=0;elements[i]!='\n';i++)
     {
-      if(test[i]=='.')
+      if(elements[i]=='.')
       {
         loc=i;
       }
@@ -19,5 +17,5 @@ void main()
     printf("%d\n",loc);
   }
   pclose(fp);
-  free(test);
+  free(elements);
 }
