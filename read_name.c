@@ -1,4 +1,4 @@
-void read_files()
+void read_name()
 {
   char *elements;
   FILE *fp=popen("ls","r");
