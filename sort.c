@@ -1,10 +1,11 @@
 void extension()
 {
   char ext[10];
-  int loc=-1;
+  int loc;
   int sizeq=sizeof(sort_queue)/sizeof(sort_queue[0]);
   for(int i=0;i<sizeq;i++)
   {
+    loc=-1;
     for(int j=0;sort_queue[i][j]!='\n';j++)
     {
       if(sort_queue[i][j]=='.')
