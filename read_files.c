@@ -5,7 +5,7 @@ void read_files()
   files=(char *)malloc(sizeof(fp));
   while(fgets(files,sizeof(fp),fp)!= NULL)
   {
-    if(!(strcmp(sort_queue[i],"a.out")), && !(strcmp(sort_queue[i],"program.c")))
+    if(!(strcmp(files,"a.out")), && !(strcmp(files,"program.c")))
     {
       sort_queue[i]=files;
     }
