@@ -1,6 +1,6 @@
 void extension()
 {
-  char ext[10];
+  char ext[15];
   int loc;
   int sizeq=sizeof(sort_queue)/sizeof(sort_queue[0]);
   for(int i=0;i<sizeq;i++)
