@@ -24,7 +24,7 @@ void extension()
 void sort(char ext[],int num)
 {
   char move_command[100]="mv ";
-  strcat(move_command,sort_queue[num]);;
+  strcat(move_command,sort_queue[num]);
   int size_music=sizeof(music)/sizeof(music[0]);
   int size_exec=sizeof(exec)/sizeof(exec[0]);
   for(int i=0;i<size_music;i++)
