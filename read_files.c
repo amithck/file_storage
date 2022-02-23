@@ -7,7 +7,8 @@ void read_files()
   {
     if(!(strcmp(files,"a.out")), && !(strcmp(files,"program.c")))
     {
-      sort_queue[i]=files;
+      sort_queue[sizeq]=files;
+      sizeq++;
     }
   }
   pclose(fp);
