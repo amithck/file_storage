@@ -119,14 +119,21 @@ int main()
                        break;
                 case 1:echo();
                        wrefresh(win);
-                       mvwprintw(win, 5, 2, "\t");
+                       mvwprintw(win, 5, 2, "\t\t\t");
                        mvwgetstr(win,5,2,search_ele);
                        noecho();
                        flag=search_engine(search_ele);
-                       mvwprintw(win, 6, 2, "%d",flag);
-                       for(int x=0;x<search_num;x++)
+                       if(flag==1)
                        {
-                         mvwprintw(win, 7+(x), 2, "%s",search_found[x]);
+                        mvwprintw(win, 6, 2, "ELEMENTS FOUND\t");
+                        for(int x=0;x<search_num;x++)
+                        {
+                          mvwprintw(win, 7+(x), 2, "%s",search_found[x]);
+                        }
+                       }
+                       else 
+                       {
+                         mvwprintw(win, 6, 2, "NO ELEMENTS FOUND");
                        }
                        search_num=0;
                        break;
