@@ -129,6 +129,22 @@ begin:
                break;
       }
     }
+    else 
+    {
+      for(int j=0;j<max;j++)
+      {
+        if(i==j)
+        {
+          wattron(win,A_STANDOUT);
+          mvwprintw(win, (j+1), 2, op[j]);
+          wattroff(win,A_STANDOUT);
+        }
+        else
+        {
+          mvwprintw(win, (j+1), 2, op[j]);
+        }
+      }
+    }
   }
 exit:
   endwin();
@@ -427,7 +443,8 @@ void search_display(WINDOW *win,int *number)
   echo();
   keypad(win,true);
   wrefresh(win);
-  mvwgetstr(win,1,2,search_ele);
+  mvwprintw(win, 1, 2, "Enter search element:\t");
+  mvwgetstr(win,2,2,search_ele);
   noecho();
   flag=search_engine(search_ele);
   wclear(win);
@@ -459,13 +476,29 @@ void search_display(WINDOW *win,int *number)
       {
         if(i==(j+1))
         {
-          wattron(win,A_STANDOUT);
-          mvwprintw(win, (j+2), 2, "%s : %s",search_found[j],search_found_loc[j]);
-          wattroff(win,A_STANDOUT);
+          if(i==search_num+1)
+          {
+            wattron(win,A_STANDOUT);
+            mvwprintw(win, (j+2), 2, "%s",search_found[j]);
+            wattroff(win,A_STANDOUT);
+          }
+          else 
+          {
+            wattron(win,A_STANDOUT);
+            mvwprintw(win, (j+2), 2, "%s : %s",search_found[j],search_found_loc[j]);
+            wattroff(win,A_STANDOUT);
+          }
         }
         else
         {
-          mvwprintw(win, (j+2), 2, "%s : %s",search_found[j],search_found_loc[j]);
+          if(j==search_num)
+          {
+            mvwprintw(win, (j+2), 2, "%s",search_found[j]);
+          }
+          else 
+          {
+            mvwprintw(win, (j+2), 2, "%s : %s",search_found[j],search_found_loc[j]);
+          }
         }
       }
 
@@ -479,13 +512,29 @@ void search_display(WINDOW *win,int *number)
       {
         if(i==(j+1))
         {
-          wattron(win,A_STANDOUT);
-          mvwprintw(win, (j+2), 2, "%s : %s",search_found[j],search_found_loc[j]);
-          wattroff(win,A_STANDOUT);
+          if(i==search_num+1)
+          {
+            wattron(win,A_STANDOUT);
+            mvwprintw(win, (j+2), 2, "%s",search_found[j]);
+            wattroff(win,A_STANDOUT);
+          }
+          else 
+          {
+            wattron(win,A_STANDOUT);
+            mvwprintw(win, (j+2), 2, "%s : %s",search_found[j],search_found_loc[j]);
+            wattroff(win,A_STANDOUT);
+          }
         }
         else
         {
-          mvwprintw(win, (j+2), 2, "%s : %s",search_found[j],search_found_loc[j]);
+          if(j==search_num)
+          {
+            mvwprintw(win, (j+2), 2, "%s",search_found[j]);
+          }
+          else 
+          {
+            mvwprintw(win, (j+2), 2, "%s : %s",search_found[j],search_found_loc[j]);
+          }
         }
       }
 
