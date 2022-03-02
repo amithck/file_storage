@@ -17,7 +17,8 @@ void sort(char [], int);
 int search_engine(char []);
 void create_base_tree();
 void openfile(char[],char[]);
-void search_display(WINDOW *,int *);
+void search_display(WINDOW *,int);
+void print_menu(WINDOW *,int);
 
 char search_history[10][100];
 char search_history2[10][100];
@@ -31,6 +32,10 @@ char exec[][15]={".apk",".sk",".ahk",".jar",".run",".xbe",".cmd",".ipa",".exe","
 char doc[][15]={".doc",".docm",".docx",".dotm",".dotx",".htm",".html",".mht",".mhtml",".odt",".pdf",".rtf",".txt",".wps",".xml",".xps",".csv",".dbf",".dif",".ods",".prn",".slk",".xla",".xlam",".xls",".xlsb",".xlsm",".xlsx",".xlt",".xltm",".xltx",".xlw",".odp",".pot",".potm",".potx",".ppa",".ppam",".pps",".ppsm",".ppsx",".ppt",".pptm",".pptx",".thmx",".emf"};
 char img[][15]={".jpeg", ".jp2", ".exif", ".tiff", ".gif", ".bmp", ".png", ".ppm", ".pgm",".pbm", ".pnm", ".webp", ".hdr", ".heif", ".deep", ".drw", ".ecw", ".fits", ".flif",".ico", ".ilbm", ".img", ".jxl", ".jxr", ".nrrd", ".pam", ".pcx", ".pgf", ".plbm",".sgi", ".sid", ".tga", ".vicar", ".xisf", ".cd5", ".cpt", ".kra", ".mdp", ".pdn", ".psd",".psp", ".sai", ".xcf", ".cgm", ".rs-274x", ".svg", ".hpgl", ".hvif", ".naplps", ".odg",".qcc", ".amf", ".dgn", ".dwg", ".dxf", ".fit", ".hsf", ".iges", ".imml", ".ipa", ".jt", ".prc",".step", ".skp", ".stl", ".u3d", ".vrml", ".xaml", ".xgl", ".xvl", ".x3d", ".eps",".pict", ".wmf", ".swf", ".xaml", ".mpo", ".pns", ".jps"};
 char vid[][15]={".webm", ".mkv", ".flv", ".vob", ".ogv", ".ogg", ".drc", ".gifv", ".mng", ".avi", ".mts",".m2ts", ".ts", ".mov", ".qt", ".wmv", ".yuv", ".rm", ".rmvb", ".viv", ".asf", ".amv", ".mp4",".m4p", ".m4v", ".mpg", ".mp2", ".mpeg", ".mpe", ".mpv", ".mpg", ".m2v", ".m4v", ".svi",".3gp", ".3gv",".v2", ".mxf", ".roq", ".nsv", ".flv", ".f4v", ".f4p", ".f4a", ".f4b"};
+
+
+char op[4][15]={"Sort","Search","History","Exit"};
+
 
 int sizeq=0;
 
@@ -57,25 +62,25 @@ int main()
   noecho();
   curs_set(0);
 
-  int yMax,xMax;
-
+  int yMax,xMax,cen;
+  cen=strlen("File Management System");
+  cen=cen/2;
   getmaxyx(stdscr, yMax, xMax);
   WINDOW *win= newwin(yMax/2,xMax/2, yMax/4, xMax/4);
 
+  cen=xMax/4-cen;
   box(win,0,0);
   keypad(win,true);
-  mvwprintw(win, 1, 2, "Sort");
-  mvwprintw(win, 2, 2, "Search");
-  mvwprintw(win, 3, 2, "History");
-  mvwprintw(win, 4, 2, "Exit");
+  print_menu(win,cen);
   int i=-1,max=4,x=0,z=-1;;
-  char op[4][15]={"Sort","Search","History","Exit"};
+
   int ch,ch1;
   while(ch=wgetch(win))
   {
 begin:
     wclear(win);
     box(win,0,0);
+    mvwprintw(win, 1, cen, "File Management System");
     if(ch==KEY_DOWN)
     {
       i=(i+1)%max;
@@ -84,12 +89,12 @@ begin:
         if(i==j)
         {
           wattron(win,A_STANDOUT);
-          mvwprintw(win, (j+1), 2, op[j]);
+          mvwprintw(win, (j+2), 2, op[j]);
           wattroff(win,A_STANDOUT);
         }
         else
         {
-          mvwprintw(win, (j+1), 2, op[j]);
+          mvwprintw(win, (j+2), 2, op[j]);
         }
       }
 
@@ -104,12 +109,12 @@ begin:
         if(i==j)
         {
           wattron(win,A_STANDOUT);
-          mvwprintw(win, (j+1), 2, op[j]);
+          mvwprintw(win, (j+2), 2, op[j]);
           wattroff(win,A_STANDOUT);
         }
         else
         {
-          mvwprintw(win, (j+1), 2, op[j]);
+          mvwprintw(win, (j+2), 2, op[j]);
         }
       }
 
@@ -120,8 +125,11 @@ begin:
       {
         case 0:read_files("sort");
                extension();
+               print_menu(win,cen);
+               i=-1;
                break;
-        case 1:search_display(win, &i);
+        case 1:search_display(win,cen);
+               i=-1;
                break;
         case 2:mvwprintw(win,6,2,"You want to see history");
                break;
@@ -131,17 +139,18 @@ begin:
     }
     else 
     {
+      mvwprintw(win, 1, cen, "File Management System");
       for(int j=0;j<max;j++)
       {
         if(i==j)
         {
           wattron(win,A_STANDOUT);
-          mvwprintw(win, (j+1), 2, op[j]);
+          mvwprintw(win, (j+2), 2, op[j]);
           wattroff(win,A_STANDOUT);
         }
         else
         {
-          mvwprintw(win, (j+1), 2, op[j]);
+          mvwprintw(win, (j+2), 2, op[j]);
         }
       }
     }
@@ -436,14 +445,15 @@ void history()
   }
 }
 
-void search_display(WINDOW *win,int *number)
+void search_display(WINDOW *win,int cen)
 {
   int flag,x=0,ch,i=-1;
   char search_ele[100];
   echo();
   keypad(win,true);
-  wrefresh(win);
-  mvwprintw(win, 1, 2, "Enter search element:\t");
+  wclear(win);
+  box(win,0,0);
+  mvwprintw(win, 1, 2, "Enter search element:");
   mvwgetstr(win,2,2,search_ele);
   noecho();
   flag=search_engine(search_ele);
@@ -451,7 +461,7 @@ void search_display(WINDOW *win,int *number)
   box(win,0,0);
   if(flag==1)
   {
-    mvwprintw(win, 1, 2, "ELEMENTS FOUND\t");
+    mvwprintw(win, 1, 2, "ELEMENTS FOUND");
     for(x=0;x<search_num;x++)
     {
       mvwprintw(win, (x+2), 2, "%s : %s",search_found[x],search_found_loc[x]);
@@ -549,12 +559,17 @@ void search_display(WINDOW *win,int *number)
     }
   }
 end:
+  print_menu(win,cen);
+  search_num=0;
+}
+
+void print_menu(WINDOW *win,int cen)
+{
   wclear(win);
   box(win,0,0);
-  mvwprintw(win, 1, 2, "Sort");
-  mvwprintw(win, 2, 2, "Search");
-  mvwprintw(win, 3, 2, "History");
-  mvwprintw(win, 4, 2, "Exit");
-  *number=-1;
-  search_num=0;
+  mvwprintw(win, 1, cen, "File Management System");
+  mvwprintw(win, 2, 2, "Sort");
+  mvwprintw(win, 3, 2, "Search");
+  mvwprintw(win, 4, 2, "History");
+  mvwprintw(win, 5, 2, "Exit");
 }
