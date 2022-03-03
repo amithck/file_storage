@@ -143,6 +143,7 @@ begin:
                break;
         case 3:goto exit;
                break;
+        default:print_menu(win,cen);
       }
     }
     else 
@@ -615,7 +616,7 @@ void printtree(WINDOW *win,int yMax)
         {
           strcpy(ele,cur2->data);
           len=strlen(ele);
-          ele[len-1]='\0';
+          ele[len]='\0';
           mvwprintw(win,i++,2,ele);
           if(cur2->sibling!=NULL)
           {
