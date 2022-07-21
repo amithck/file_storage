@@ -6,7 +6,6 @@ To run the program, you need to have the ncurses library installed. Compile the 
 ```
 gcc program.c -lncursess
 ./a.out
-
 ```
 **make sure to not change the name of the program file or the executable as the program will sort files with any other name**
 
@@ -19,5 +18,4 @@ Videos
 Documents
 Executable
 Unclassified
-
 ```
