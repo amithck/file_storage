@@ -4,27 +4,28 @@
 #include<malloc.h>
 #include<curses.h>
 #include<ncurses.h>
+#include<ctype.h>
 
 #define MALLOC(p,s,t)\
 if(!(p=(t)malloc(s))){\
 printf("INSUFFICIENT MEMORY");\
 exit(1);}
 
-void read_files();
+void read_files(char []);
 void extension();
 void add_tree(char [],char []);
 void sort(char [], int);
 int search_engine(char []);
 void create_base_tree();
 void openfile(char[],char[]);
-void search_display(WINDOW *,int);
+void search_display(WINDOW *,int,int);
 void print_menu(WINDOW *,int);
-void history(WINDOW *);
+void history(WINDOW *,int);
 void printtree(WINDOW *,int);
 
-char search_history[10][100];
-char search_history2[10][100];
-char search_found[100][100];
+char search_history[100][10000];
+char search_history2[100][10000];
+char search_found[100][10000];
 char search_found_loc[100][100];
 int history_top=-1,search_num=0;
 
@@ -43,7 +44,7 @@ int sizeq=0;
 
 struct file_tree
 {
-  char data[1000];
+  char data[10000];
   struct file_tree *child;
   struct file_tree *sibling;
 };
@@ -130,14 +131,15 @@ begin:
                wclear(win);
                box(win,0, 0);
                mvwprintw(win, 1, 2, "Sorting Successful");
+               sizeq=0;
                printtree(win, yMax/2);
                print_menu(win,cen);
                i=-1;
                break;
-        case 1:search_display(win,cen);
+        case 1:search_display(win,cen,yMax);
                i=-1;
                break;
-        case 2:history(win);
+        case 2:history(win,yMax/2);
                i=-1;
                print_menu(win,cen);
                break;
@@ -229,8 +231,7 @@ void read_files(char action[])
 
 void extension()
 {
-  char *ext;
-  char ext2[15];
+  char ext[15];
   int loc;
   for(int i=0;i<sizeq;i++)
   {
@@ -243,17 +244,38 @@ void extension()
     }
     if(loc>0)
     {
-      strncpy(ext2,sort_queue[i]+loc,10);
-      sort(ext2,i);
+      strncpy(ext,sort_queue[i]+loc,10);
+      sort(ext,i);
     }
   }
 }
 
 void sort(char ext[],int num)
 {
-  char move_command[1000];
+  for(int i=0;i<strlen(ext);i++)
+  {
+    ext[i]=tolower(ext[i]);
+  }
+  char move_command[10000];
+  char move_file[10000];
+  strcpy(move_file,sort_queue[num]);
   strcpy(move_command,"mv ");
-  strcat(move_command,sort_queue[num]);
+  int j=strlen(move_file);
+  for(int i=0;i<j;i++)
+  {
+      if(move_file[i]==' ' || move_file[i]==')' || move_file[i]=='(')
+      {
+          int l=strlen(move_file);
+          for(;l>=i;l--)
+          {
+            move_file[l+1]=move_file[l];
+          }
+          move_file[i]='\\';
+          i++;
+          j++;
+      }
+  }
+  strcat(move_command,move_file);
   int s=strlen(ext);
   ext[s-1]='\0';
   int size_music=sizeof(music)/sizeof(music[0]);
@@ -263,7 +285,7 @@ void sort(char ext[],int num)
   int size_vid=sizeof(doc)/sizeof(vid[0]);
   s=strlen(move_command);
   move_command[s-1]='\0';
-
+  
   for(int i=0;i<size_music;i++)
   {
     if(!(strcmp(ext,music[i])))
@@ -356,6 +378,7 @@ void create_base_tree()
 void add_tree(char name[],char type[])
 {
   NODE cur;
+  name[strlen(name)-1]=' ';
   cur=head->child;
   while((strcmp(cur->data,type)))
   {
@@ -364,7 +387,7 @@ void add_tree(char name[],char type[])
   if(cur->child==NULL)
   {
     MALLOC(cur->child,sizeof(struct file_tree),NODE);
-    strcpy(cur->child->data,name);;
+    strcpy(cur->child->data,name);
   }
   else
   {
@@ -381,6 +404,7 @@ void add_tree(char name[],char type[])
 int search_engine(char search[])
 {
   NODE cur,cur2;
+  char ele[10000];
   cur=head->child;
   int flag=0;
   int i,j,len;
@@ -392,9 +416,18 @@ start:
     while(true)
     {
       len=strlen(cur2->data);
+      strcpy(ele,cur2->data);
       for(int x=0;x<len;x++)
       {
-        if(search[j++]==cur2->data[i++])
+        ele[x]=tolower(ele[x]);
+      }
+      for(int x=0;x<strlen(search);x++)
+      {
+        search[x]=tolower(search[x]);
+      }
+      for(int x=0;x<len;x++)
+      {
+        if(search[j++]==ele[i++])
         {
           if(search[j]=='\0')
           {
@@ -439,12 +472,18 @@ void openfile(char open[],char loc[])
 {
   int flag=0;
   char *ext;
+  char ext2[20];
   char open_cmd[1000];
   ext=strrchr(open,'.');
+  strcpy(ext2,ext);
+  for(int i=0;i<strlen(ext2);i++)
+  {
+    ext2[i]=tolower(ext2[i]);
+  }
   int size_vid=sizeof(doc)/sizeof(vid[0]);
   for(int i=0;i<size_vid;i++)
   {
-    if(!strcmp(ext,vid[i]) || !strcmp(ext,music[i]))
+    if(!strcmp(ext2,vid[i]) || !strcmp(ext2,music[i]))
     {
       flag=1;
       strcpy(open_cmd,"vlc -q mymedia 2> /dev/null ");
@@ -457,25 +496,43 @@ void openfile(char open[],char loc[])
   {
     strcpy(open_cmd,"open ");
   }
+  char ele[10000];
+  strcpy(ele,open);
+  int j=strlen(ele);
+  for(int i=0;i<j;i++)
+  {
+      if(ele[i]==' ' || ele[i]==')' || ele[i]=='(')
+      {
+          int l=strlen(ele);
+          for(;l>=i;l--)
+          {
+            ele[l+1]=ele[l];
+          }
+          ele[i]='\\';
+          i++;
+          j++;
+      }
+  }
   strcat(open_cmd,loc);
   strcat(open_cmd,"/");
-  strcat(open_cmd,open);
+  strcat(open_cmd,ele);
   system(open_cmd);
   return;
 }
 
-void history(WINDOW *win)
+void history(WINDOW *win,int yMax)
 {
+  int x=1;
   wclear(win);
   box(win,0,0);
   if(history_top>=0)
   {
-    for(int i=history_top;i>=0;i--)
+    for(int i=history_top;i>=0 && x<yMax-2;i--)
     {
-      mvwprintw(win,i+1,2,"%s : %s",search_history[i],search_history2[i]);
+      mvwprintw(win,x++,2,"%s : %s",search_history[i],search_history2[i]);
     }
     wattron(win,A_STANDOUT);
-    mvwprintw(win, history_top+2, 2, "Back");
+    mvwprintw(win, x, 2, "Back");
     wattroff(win,A_STANDOUT);
   }
   else 
@@ -489,9 +546,9 @@ void history(WINDOW *win)
   wgetch(win);
 }
 
-void search_display(WINDOW *win,int cen)
+void search_display(WINDOW *win,int cen,int yMax)
 {
-  int flag,x=0,ch,i=-1;
+  int flag,x=0,ch,i=-1,j=0;
   char search_ele[100];
   echo();
   keypad(win,true);
@@ -508,7 +565,7 @@ void search_display(WINDOW *win,int cen)
     mvwprintw(win, 1, 2, "ELEMENTS FOUND");
     for(x=0;x<search_num;x++)
     {
-      mvwprintw(win, (x+2), 2, "%s : %s",search_found[x],search_found_loc[x]);
+      mvwprintw(win,(x+2), 2, "%s : %s",search_found[x],search_found_loc[x]);
     }
     mvwprintw(win,x+2,2,"Cancel");
   }
@@ -599,6 +656,10 @@ void search_display(WINDOW *win,int cen)
       {
         goto end;
       }
+      else if(i==-1)
+      {
+        continue;
+      }
       openfile(search_found[i-1],search_found_loc[i-1]);
     }
   }
@@ -622,7 +683,7 @@ void printtree(WINDOW *win,int yMax)
 {
   NODE cur,cur2;
   int i=3,skip=0,len;
-  char ele[100];
+  char ele[10000];
   cur=head->child;
   while(true)
   {
